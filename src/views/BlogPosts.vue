@@ -42,6 +42,9 @@
           </d-card-body>
           <d-card-footer>
             <d-button-group>
+              <d-button @click="$router.push({ path: '/myProject/' + post.id })"
+                >Change</d-button
+              >
               <d-button @click="showConfig(post)">Config</d-button>
               <d-button @click="$router.push({ path: '/project/' + post.id })"
                 >Go Results</d-button
@@ -51,12 +54,42 @@
         </d-card>
       </d-col>
     </d-row>
-    {
+
     <config-modal
       :show-modal="isShowConfig"
       :config="selectConfig"
       v-model="isShowConfig"
     ></config-modal>
+    <d-modal v-if="isShowProject" @close="closeModel('isShowProject')">
+      <d-modal-header></d-modal-header>
+      <d-modal-body>
+        <d-card-body>
+          <div class="form-group">
+            <label> Project Name</label>
+            <d-input v-model="newProject.projectName" class="mb-2" />
+          </div>
+          <div class="form-group">
+            <label>Project Description</label>
+            <d-input class="mb-2" v-model="newProject.description"></d-input>
+          </div>
+          <div class="form-group">
+            <label>User Name</label>
+            <d-input class="mb-2" v-model="newProject.userName"></d-input>
+          </div>
+          <div class="form-group">
+            <label>Password</label>
+            <d-input class="mb-2" v-model="newProject.password"></d-input>
+          </div>
+        </d-card-body>
+
+        <d-modal-footer>
+          <d-button-group>
+            <d-button @click="closeModel('isShowProject')">Cancel</d-button>
+            <d-button @click="updateProject()">Ok</d-button>
+          </d-button-group>
+        </d-modal-footer>
+      </d-modal-body>
+    </d-modal>
   </d-container>
 </template>
 
@@ -66,13 +99,31 @@ export default {
   data() {
     return {
       isShowConfig: false,
-      selectConfig: {}
+      selectConfig: {},
+      isShowProject: false,
+      newProject: {}
     };
   },
   components: {
     configModal
   },
   methods: {
+    statusResult(key) {
+      console.log(key);
+      this.$store.getters.getProjectStatus(key.id, this).then(
+        response => {
+          console.log(response);
+        },
+        err => this.$store.getters.errorParse(err, this)
+      );
+    },
+    selectProject(project) {
+      this.newProject = project;
+      this.isShowProject = true;
+    },
+    updateProject() {
+      this.$store.getters.updateProject(this.newProject, this);
+    },
     showConfig(key) {
       this.$store.getters
         .getProjectConfig(key.projectName, this)

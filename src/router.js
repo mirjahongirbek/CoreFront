@@ -9,6 +9,8 @@ import ComponentsOverview from './views/ComponentsOverview.vue';
 import Tables from './views/Tables.vue';
 import BlogPosts from './views/BlogPosts.vue';
 import Project from "./views/projects.vue"
+import MyProject from "./views/editProject.vue"
+
 Vue.use(Router);
 
 export default new Router({
@@ -25,6 +27,10 @@ export default new Router({
   routes: [{
       path: '/',
       redirect: '/blog-overview',
+    },
+    {
+      path: "/myProject/:id",
+      component: MyProject
     },
     {
       path: "/project/:id",

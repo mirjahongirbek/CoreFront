@@ -15,10 +15,9 @@ export default {
       }
       this.$api.get("/home/GetCulters").then(
         response => {
-          console.log(response.result);
           localStorage.setItem("allCulters", JSON.stringify(response.result));
         },
-        err => {}
+        err => this.$store.getters.errorParse(err, this)
       );
     }
   },

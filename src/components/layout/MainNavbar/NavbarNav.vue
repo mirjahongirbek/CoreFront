@@ -82,7 +82,7 @@
         </d-dropdown-item>
       </d-collapse>
     </li>
-    <d-modal v-if="isShowProject">
+    <d-modal v-if="isShowProject" @close="closeModel('isShowProject')">
       <d-modal-header></d-modal-header>
       <d-modal-body>
         <d-card-body>
@@ -94,11 +94,18 @@
             <label>Project Description</label>
             <d-input class="mb-2" v-model="newProject.description"></d-input>
           </div>
+          <div class="form-group">
+            <label>User Name</label>
+            <d-input class="mb-2" v-model="newProject.userName"></d-input>
+          </div>
+          <div class="form-group">
+            <label>Password</label>
+            <d-input class="mb-2" v-model="newProject.password"></d-input>
+          </div>
         </d-card-body>
-
         <d-modal-footer>
           <d-button-group>
-            <d-button>Cancel</d-button>
+            <d-button @click="closeModel('isShowProject')">Cancel</d-button>
             <d-button @click="addProject()">Ok</d-button>
           </d-button-group>
         </d-modal-footer>
@@ -119,6 +126,9 @@ export default {
     };
   },
   methods: {
+    closeModel(name) {
+      this[name] = false;
+    },
     addProject() {
       this.$api.post("/project/addProject", this.newProject).then(
         response => {
