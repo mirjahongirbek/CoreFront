@@ -3,8 +3,8 @@
     <!-- Page Header -->
     <d-row no-gutters class="page-header py-4">
       <d-col col sm="4" class="text-center text-sm-left mb-4 mb-sm-0">
-        <span class="text-uppercase page-subtitle">Dashboard</span>
-        <h3 class="page-title">Personal Blog</h3>
+        <span class="text-uppercase page-subtitle">Core Server</span>
+        <h3 class="page-title">Dashboard</h3>
       </d-col>
     </d-row>
 
@@ -23,27 +23,27 @@
         />
       </d-col>
     </d-row>
-
-    <d-row>
-      <!-- Users Overview -->
+    <blog-posts></blog-posts>
+    <!-- <d-row>
+      <!-- Users Overview 
       <d-col lg="8" md="6" sm="12" class="mb-4">
         <bo-users-overview />
       </d-col>
 
-      <!-- Users by Device (lite) -->
+      <!-- Users by Device (lite)
       <d-col lg="4" md="6" sm="12" class="mb-4">
         <bo-users-by-device />
       </d-col>
-    </d-row>
+    </d-row> -->
 
     <d-row>
       <!-- New Draft -->
-      <d-col lg="4" md="6" sm="12" class="mb-4">
+      <!-- <d-col lg="4" md="6" sm="12" class="mb-4">
         <bo-new-draft />
-      </d-col>
+      </d-col> -->
 
       <!-- Discussions -->
-      <d-col lg="5" md="12" sm="12" class="mb-4">
+      <!-- <d-col lg="5" md="12" sm="12" class="mb-4">
         <bo-discussions
           @approve="handleApprove"
           @reject="handleReject"
@@ -51,35 +51,29 @@
           @view-all-comments="handleViewAllComments"
         />
       </d-col>
-      <!-- Top Referrals -->
+      <!-- Top Referrals--< 
       <d-col lg="3" md="12" sm="12" class="mb-4">
         <bo-top-referrals />
       </d-col>
       <d-col lg="6" md="12" sm="12" class="mb-6">
         <config-draft></config-draft>
-      </d-col>
+      </d-col> -->
     </d-row>
   </d-container>
 </template>
 
 <script>
 import SmallStats from "@/components/common/SmallStats.vue";
-import TopReferrals from "@/components/common/TopReferrals.vue";
-import UsersOverview from "@/components/blog/UsersOverview.vue";
-import UsersByDevice from "@/components/blog/UsersByDeviceLite.vue";
-import NewDraft from "@/components/blog/NewDraft.vue";
-import ConfigDraft from "@/components/blog/configDraft.vue";
-import Discussions from "@/components/blog/Discussions.vue";
+import BlogPosts from "./BlogPosts.vue";
+// import UsersOverview from "@/components/blog/UsersOverview.vue";
+// import UsersByDevice from "@/components/blog/UsersByDeviceLite.vue";
 
 export default {
   components: {
-    ConfigDraft,
     SmallStats,
-    boUsersOverview: UsersOverview,
-    boUsersByDevice: UsersByDevice,
-    boNewDraft: NewDraft,
-    boDiscussions: Discussions,
-    boTopReferrals: TopReferrals
+    BlogPosts
+    // boUsersOverview: UsersOverview,
+    // boUsersByDevice: UsersByDevice
   },
   data() {
     return {
@@ -103,13 +97,18 @@ export default {
       alert("Viewing all comments!"); // eslint-disable-line no-alert
     }
   },
+  created() {
+    this.$store.getters.getDashboard(this);
+  },
   computed: {
     smallStats() {
+      let dashboard = this.$store.state.dashborad;
+
       return [
         {
-          label: "Posts",
-          value: "2,390",
-          percentage: "4.7%",
+          label: "Projects",
+          value: dashboard.project,
+
           increase: true,
           labels: ["Label", "Label", "Label", "Label", "Label", "Label"],
           datasets: [
@@ -124,9 +123,8 @@ export default {
           ]
         },
         {
-          label: "Pages",
-          value: "182",
-          percentage: "12.4",
+          label: "Config",
+          value: dashboard.config,
           increase: true,
           labels: ["Label", "Label", "Label", "Label", "Label", "Label"],
           datasets: [
@@ -141,9 +139,8 @@ export default {
           ]
         },
         {
-          label: "Comments",
-          value: "8,147",
-          percentage: "3.8%",
+          label: "My Results",
+          value: dashboard.myModel,
           increase: false,
           decrease: true,
           labels: ["Label", "Label", "Label", "Label", "Label", "Label"],
@@ -159,9 +156,8 @@ export default {
           ]
         },
         {
-          label: "New Customers",
-          value: "29",
-          percentage: "2.71%",
+          label: "Error Models",
+          value: dashboard.errorModels,
           increase: false,
           decrease: true,
           labels: ["Label", "Label", "Label", "Label", "Label", "Label"],
@@ -177,9 +173,8 @@ export default {
           ]
         },
         {
-          label: "Subscribers",
-          value: "17,281",
-          percentage: "2.4%",
+          label: "Results Models",
+          value: dashboard.modelResult,
           increase: false,
           decrease: true,
           labels: ["Label", "Label", "Label", "Label", "Label", "Label"],
@@ -199,4 +194,3 @@ export default {
   }
 };
 </script>
-

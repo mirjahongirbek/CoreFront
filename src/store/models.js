@@ -1,7 +1,7 @@
 export default {
     statusCore: {
-        ServiceNotFound: 400,
         Success: 200,
+        ServiceNotFound: 400,
         InvalidParameters: 400,
         Ok: 200,
         UnAuthorized: 401,
@@ -26,13 +26,14 @@ export default {
     model: {
         id: "",
         projectName: "",
-        statusCode: 200,
-        lang: "",
-        responseStatus: 0,
+        statusCode: 0,
+        lang: "uz",
+        responseStatus: 200,
         modelStatus: 0,
         errorResult: null,
         result: null,
-        functionName: ""
+        functionName: "",
+        myResult: {},
     },
     errorResult: {
         code: 0,

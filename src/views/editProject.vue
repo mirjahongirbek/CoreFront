@@ -7,22 +7,31 @@
         <d-card>
           <d-card-header
             >Edit Project
-            
-<!--  <label>Upload Image</label>
-              <input type="file" /> -->
-            <d-button @click="
-            confIndex=-1; showModal=true
-            ">+</d-button>
+            <d-button
+              @click="
+                confIndex = -1;
+                showModal = true;
+              "
+              >+</d-button
+            >
           </d-card-header>
-           <d-card-img @click="showFileModal()" style="width: 100%" :src="project.imageUrl"/>
-           <input id="changeFile" v-on:change="changeFile()" type="file"  ref="file" >
+          <d-card-img
+            @click="showFileModal()"
+            style="width: 100%"
+            :src="project.imageUrl"
+          />
+          <input
+            id="changeFile"
+            v-on:change="changeFile()"
+            type="file"
+            ref="file"
+          />
           <d-card-body :title="project.projectName">
             <d-form>
               <label>Project Name</label>
               <d-input v-model="project.projectName"></d-input>
               <label>Project Description</label>
               <d-input v-model="project.projectDescription"></d-input>
-             
               <br />
               <label>isCheckUser</label>
               <d-checkbox inline v-model="enabled" toggle
@@ -53,20 +62,30 @@
                 :key="key"
               >
                 <d-form inline>
-                  <label class="sr-only" for="f1_Username">Key</label>
+                  <label for="f1_Username">Key</label>
                   <d-input
                     id="f1_Username"
                     class="mb-2 mr-sm-2 mb-sm-0"
-                    placeholder="Key" v-model="key.key" disabled 
+                    placeholder="Key"
+                    v-model="key.key"
+                    disabled
                   />
-                  <label class="sr-only" for="f1_Password">Value</label>
+                  <label for="f1_Password">Value</label>
                   <d-input
-                    id="f2_Password" v-model="key.value"
-                    class="mr-2" disabled
-                   placeholder="Value"
+                    id="f2_Password"
+                    v-model="key.value"
+                    class="mr-2"
+                    disabled
+                    placeholder="Value"
                   />
-                  <label class="sr-only" for="modalKey">Modal Key</label>
-                  <d-input id="modalKey" v-model="key.modalKey" class="mr-2" placeholder="Modal Key" />
+                  <label for="modalKey">Modal Key</label>
+                  <d-input
+                    id="modalKey"
+                    v-model="key.modalKey"
+                    disabled
+                    class="mr-2"
+                    placeholder="Modal Key"
+                  />
                 </d-form>
               </d-list-group-item>
             </d-list-group>
@@ -75,7 +94,7 @@
             ><d-button-group>
               <d-button>Cancel</d-button>
               <d-button> .</d-button>
-              <d-button>Save</d-button>
+              <d-button @click="updateProject()">Save</d-button>
             </d-button-group></d-card-footer
           >
         </d-card>
@@ -87,69 +106,81 @@
         <d-modal-title>Header</d-modal-title>
       </d-modal-header>
       <d-modal-body>
-        <d-form></br>
+        <d-form>
+          <br />
           <label for="f1_Username">Key</label>
-          <d-input v-model="projectConf.key"
-            id="f1_Username"
-            class="mb-2 mr-sm-2 mb-sm-0"
-            placeholder="Username"
-          /></br>
+          <d-form-select v-model="projectConf.key" :options="keyOtions" />
+          <br />
           <label for="f1_Password">Value</label>
           <d-input
             id="f2_Password"
             class="mr-2"
             v-model="projectConf.value"
-            placeholder="Password"
-          /></br>
+            placeholder="Value"
+          /><br />
           <label>Modal Key</label>
-          <d-input id="modalKey" v-model="projectConf.modalKey" class="mr-2" placeholder="Password" />
+          <d-input
+            id="modalKey"
+            v-model="projectConf.modalKey"
+            class="mr-2"
+            placeholder="Modal Key"
+          />
         </d-form>
-        </br>
+        <br />
         <d-btn @click="saveInfo()">Save</d-btn>
       </d-modal-body>
     </d-modal>
-   
   </d-container>
 </template>
 <script>
 export default {
   data() {
     return {
-        id:"",
+      id: "",
+      keyOtions: [{ value: "ip", text: "Po IpAddress" }],
       showModal: false,
       project: {},
-      confIndex:-1,
+      confIndex: -1,
       projectConf: {}
     };
   },
-  methods:{
-      changeFile(){
-         let file= this.$refs.file.files[0];
-         var req= new FormData();
-         req.append("id", this.id)
-         req.append("file", file);
-         this.$api.post("/project/AddImage", req).then(response=>{
-console.log(response);
-
-         },err=>this.$store.getters.errorParse(err, this));
-      },
-      showFileModal(){
-         let inp= document.getElementById("changeFile");
-         inp.click();
-      },
-saveInfo(){
-   this.showModal= false;
-   if(this.confIndex<0){
-        this.project.push(this.projectConf);
-        this.showModal= false; 
-        return;}
-   this.project[this.confIndex]= JSON.parse(JSON.stringify(this.projectConf));
-   
-}
+  methods: {
+    updateProject() {
+      this.$store.getters.updateProject(this.project, this).then(response => {
+        console.log(response);
+      });
+    },
+    changeFile() {
+      let file = this.$refs.file.files[0];
+      var req = new FormData();
+      req.append("id", this.id);
+      req.append("file", file);
+      this.$api.post("/project/AddImage", req).then(
+        response => {
+          alert("success");
+        },
+        err => this.$store.getters.errorParse(err, this)
+      );
+    },
+    showFileModal() {
+      let inp = document.getElementById("changeFile");
+      inp.click();
+    },
+    saveInfo() {
+      this.showModal = false;
+      if (this.confIndex < 0) {
+        this.project.projectConfig.push(this.projectConf);
+        this.showModal = false;
+        return;
+      }
+      this.project.projectConfig[this.confIndex] = JSON.parse(
+        JSON.stringify(this.projectConf)
+      );
+    }
   },
   mounted() {
     let id = this.$route.params.id;
-this.id=id;
+    this.id = id;
     this.$store.getters.getProjects(this).then(projects => {
       this.project = projects.firstOrDefault(m => m.id == id);
     });

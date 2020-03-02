@@ -3,8 +3,8 @@
     <!-- Page Header -->
     <div class="page-header row no-gutters py-4">
       <div class="col-12 col-sm-4 text-center text-sm-left mb-0">
-        <span class="text-uppercase page-subtitle">Components</span>
-        <h3 class="page-title">Blog Posts</h3>
+        <!-- <span class="text-uppercase page-subtitle">Components</span> -->
+        <h3 class="page-title">Projects</h3>
       </div>
     </div>
 
@@ -58,6 +58,7 @@
     <config-modal
       :show-modal="isShowConfig"
       :config="selectConfig"
+      :project="selectItem"
       v-model="isShowConfig"
     ></config-modal>
     <d-modal v-if="isShowProject" @close="closeModel('isShowProject')">
@@ -101,7 +102,8 @@ export default {
       isShowConfig: false,
       selectConfig: {},
       isShowProject: false,
-      newProject: {}
+      newProject: {},
+      selectItem: {}
     };
   },
   components: {
@@ -109,11 +111,8 @@ export default {
   },
   methods: {
     statusResult(key) {
-      console.log(key);
       this.$store.getters.getProjectStatus(key.id, this).then(
-        response => {
-          console.log(response);
-        },
+        response => {},
         err => this.$store.getters.errorParse(err, this)
       );
     },
@@ -125,6 +124,7 @@ export default {
       this.$store.getters.updateProject(this.newProject, this);
     },
     showConfig(key) {
+      this.selectItem = key;
       this.$store.getters
         .getProjectConfig(key.projectName, this)
         .then(response => {

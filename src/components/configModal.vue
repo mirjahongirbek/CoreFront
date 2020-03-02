@@ -6,8 +6,17 @@
       </d-modal-header>
       <d-modal-body>
         <div>
+          <labe>ProjectKey</labe>
+          <d-form-select v-model="selectKey">
+            <option v-for="(key, value) in project.projectConfig" :key="value">
+              {{ key.modalKey }}
+            </option>
+          </d-form-select>
+        </div>
+        <br />
+        <div>
           <v-jsoneditor
-            v-model="config.config"
+            v-model="selectConfig.config"
             :plus="false"
             height="400px"
             @error="onError"
@@ -24,6 +33,12 @@
 <script>
 import VJsoneditor from "v-jsoneditor/src/index";
 export default {
+  data() {
+    return {
+      selectConfig: {},
+      selectKey: ""
+    };
+  },
   components: {
     VJsoneditor
   },
@@ -31,21 +46,43 @@ export default {
     showModal: {
       default: false
     },
+    project: {
+      default: {}
+    },
     config: {}
   },
   methods: {
     save() {
-      console.log(this.config);
       this.$api.put("/config/Update", this.config).then(
         response => {
           console.log(response);
         },
-        err => {}
+        err => this.$store.getters.errorParse(err, this)
       );
     },
     handleClose(e) {
       //  this.showModal = false;
       this.$emit("input", false);
+    }
+  },
+  watch: {
+    selectKey: function(val) {
+      let item = this.config.firstOrDefault(m => m.myKey == val);
+      if (item) {
+        this.selectConfig = item;
+        return;
+      }
+      this.$store.getters
+        .addProjectToConfig(this.project.projectName, val, this)
+        .then(response => {
+          this.selectConfig = response;
+        });
+    },
+    showModal: function(val) {
+      if (val) {
+        let conf = this.project.projectConfig[0].modalKey;
+        this.selectKey = conf;
+      }
     }
   }
 };
