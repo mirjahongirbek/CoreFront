@@ -1,85 +1,111 @@
 <template>
-  <div>
-    <d-modal-body>
-      <d-card-body class="d-flex flex-column">
-        <div class="quick-post-form">
-          <!-- Title -->
-          <label>ProjectName: {{ projectName }}</label>
-          <div class="form-group">
-            <label>Http Status</label>
-            <d-form-select v-model="models.responseStatus">
-              <option
-                v-for="(key, value) in $store.state.models.statusCore"
-                :value="key"
-                :key="value"
-                >{{ value }}</option
-              >
-            </d-form-select>
-          </div>
-          <div class="form-group" v-if="project.projectConfig.length >= 0">
-            <label>Moda Key</label>
-            <d-form-select v-model="models.modalKey">
-              <option
-                v-for="(key, value) in project.projectConfig"
-                :key="value"
-                :value="key.modalKey"
-              >
-                {{ key.modalKey }}
-              </option>
-            </d-form-select>
-          </div>
-          <div class="form-group">
-            <label>Language</label>
-            <v-select
-              class="form-control"
-              :options="$store.state.culters"
-              v-model="models.lang"
-              placeholder="uz"
-            ></v-select>
-          </div>
-          <div class="form-group">
-            <label>Satus Code</label>
-            <d-input
-              class="form-control"
-              v-model="models.statusCode"
-              placeholder="status Code"
-            />
-          </div>
-          <div class="form-group">
-            <label>Switch is error</label>
-            <d-checkbox inline v-model="enabled" toggle>
-              <span v-if="!enabled">- 🚀🚀 Success Result! 🚀🚀</span>
-            </d-checkbox>
-          </div>
+  <d-row>
+    <d-col></d-col>
+    <d-col lg="10" md="12" sm="12">
+      <d-card>
+        <d-card-header>
+          <button class="item-icon-wrapper" @click="createModel()">
+            <i class="material-icons">refresh</i>
+            Update
+          </button>
+        </d-card-header>
+        <d-card-body class="d-flex flex-column">
+          <div class="quick-post-form">
+            <d-row>
+              <d-col lg="4">
+                <div class="form-group">
+                  <label>Http Status</label>
+                  <d-form-select v-model="models.responseStatus">
+                    <option
+                      v-for="(key, value) in $store.state.models.statusCore"
+                      :value="key"
+                      :key="value"
+                      >{{ value }}</option
+                    >
+                  </d-form-select>
+                </div>
 
-          <div class="form-group">
-            <label>Result Message</label>
+                <div
+                  class="form-group"
+                  v-if="selectProject.projectConfig.length >= 0"
+                >
+                  <label>Moda Key</label>
+                  <d-form-select v-model="models.modalKey">
+                    <option
+                      v-for="(key,
+                      value) in selectProject.projectConfig.groupBy(
+                        m => m.modalKey
+                      )"
+                      :key="value"
+                      :value="key.group"
+                    >
+                      {{ key.group }}
+                    </option>
+                  </d-form-select>
+                </div>
 
-            <textarea
-              plaintext="true"
-              class="form-control"
-              :disabled="enabled"
-              v-model="models.result.message"
-              aria-placeholder="Result message"
-            ></textarea>
+                <div class="form-group"></div>
+                <div class="form-group">
+                  <label>Satus Code</label>
+                  <d-input
+                    class="form-control"
+                    v-model="models.statusCode"
+                    placeholder="status Code"
+                  />
+                </div>
+              </d-col>
+              <d-col lg="8">
+                <d-row>
+                  <d-col lg="4">
+                    <label>Language</label>
+                    <v-select
+                      :options="$store.state.culters"
+                      v-model="tempReq.lang"
+                      placeholder="uz"
+                    ></v-select>
+                  </d-col>
+                  <d-col lg="6">
+                    <label>Text</label>
+                    <d-input v-model="tempReq.text" class="mb-2" />
+                  </d-col>
+                  <d-col>
+                    <label>...................</label>
+                    <d-button @click="addNewStr()">Add</d-button></d-col
+                  >
+                </d-row>
+                <d-row v-for="(key, value) in models.myResult" :key="value">
+                  <d-col lg="4"> {{ value }} </d-col>
+                  <d-col lg="6">
+                    <d-input v-model="models.myResult[value]" class="mb-2" />
+                  </d-col>
+                  <d-col>
+                    <d-button
+                      outline
+                      squared
+                      theme="danger"
+                      @click="delField(value)"
+                      >Del</d-button
+                    >
+                  </d-col>
+                </d-row>
+              </d-col>
+            </d-row>
           </div>
-          <div class="form-group">
-            <label>Error Message</label>
-            <textarea
-              v-model="models.errorResult.message"
-              :disabled="!enabled"
-              class="form-control"
-            ></textarea>
-          </div>
-          <div class="form-group">
-            <d-button class="btn-accent" @click="addResult()"
-              >Create Draft</d-button
-            >
-          </div>
-        </div>
-      </d-card-body>
-    </d-modal-body>
-  </div>
+        </d-card-body>
+        <d-card-footer>
+          <d-button
+            outline
+            squared
+            theme="success"
+            @click="addResult()"
+            size="lg"
+            >Save</d-button
+          >
+        </d-card-footer>
+      </d-card>
+    </d-col>
+    <d-col></d-col>
+  </d-row>
 </template>
 <script>
 export default {
@@ -96,8 +122,11 @@ export default {
       type: String,
       default: null
     },
-    project: {
+    selectProject: {
       default: {}
+    },
+    updateMymodal: {
+      default: null
     }
   },
   data() {
@@ -105,7 +134,11 @@ export default {
       selected: "",
       models: {},
       enabled: false,
-      update: false
+      update: false,
+      tempReq: {
+        lang: "uz",
+        text: ""
+      }
     };
   },
   computed: {
@@ -123,24 +156,34 @@ export default {
   },
   methods: {
     addResult() {
-      this.models.projectName = this.projectName;
-      if (!this.update)
-        this.$api.post("/home/AddMyModel", this.models).then(
-          response => {
-            this.$emit("addModel", response.data.result);
-          },
-          err => this.$store.getters.errorResult(err, this)
-        );
-      else this.update();
-    },
-    update() {
-      this.$api.put("/home/UpdateModel", this.models).then(
+      this.models.statusCode = parseInt(this.models.statusCode);
+      if (this.models.id) {
+        this.updateModels();
+      }
+      this.models.projectName = this.selectProject.projectName;
+      this.$api.post("/home/AddMyModel", this.models).then(
         response => {
-          console.log(resposne);
+          this.createModel();
+          if (response.result) {
+            this.$emit("addResult", response.result);
+          }
+          this.myData.push(response.result);
         },
         err => this.$store.getters.errorResult(err, this)
       );
     },
+    updateModels() {
+      this.$api.put("/home/UpdateModel", this.models).then(
+        response => {
+          this.createModel();
+          this.$emit("updateModal", this.models);
+        },
+        err => {
+          this.$store.getters.errorResult(err, this);
+        }
+      );
+    },
+
     createModel() {
       this.models = JSON.parse(JSON.stringify(this.$store.state.models.model));
       this.models.errorResult = JSON.parse(
@@ -149,6 +192,11 @@ export default {
       this.models.result = JSON.parse(
         JSON.stringify(this.$store.state.models.result)
       );
+    }
+  },
+  watch: {
+    updateMymodal: function(val) {
+      this.models = JSON.parse(JSON.stringify(val));
     }
   },
   mounted() {
