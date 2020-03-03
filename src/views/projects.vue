@@ -3,7 +3,7 @@
     <div class="page-header row no-gutters py-4">
       <div class="col-12 col-sm-4 text-center text-sm-left mb-0">
         <br />
-        <h3 class="page-title">This Project</h3>
+        <h3 class="page-title"></h3>
         <br />
       </div>
     </div>
@@ -103,7 +103,7 @@ export default {
   },
   methods: {
     addModal(model) {
-      this.models.push(model);
+      this.myData.push(model);
     },
     updateModal(model) {
       for (let i = 0; i < this.models.length; i++) {
@@ -115,44 +115,11 @@ export default {
     delField(key) {
       delete this.models.myResult[key];
     },
-    // addResult() {
-    //   this.models.statusCode = parseInt(this.models.statusCode);
-    //   if (this.models.id) {
-    //     this.updateModels();
-    //   }
-    //   this.models.projectName = this.selectProject.projectName;
 
-    //   this.$api.post("/home/AddMyModel", this.models).then(
-    //     response => {
-    //       this.createModel();
-    //       this.myData.push(response.result);
-    //     },
-    //     err => this.$store.getters.errorResult(err, this)
-    //   );
-    // },
-    // updateModels() {
-    //   this.$api.put("/home/UpdateModel", this.models).then(
-    //     response => {
-    //       this.createModel();
-    //     },
-    //     err => {
-    //       this.$store.getters.errorResult(err, this);
-    //     }
-    //   );
-    // },
     replaceModel(model) {
       for (let i = 0; i < this.myData.length; i++) {}
     },
-    addNewStr() {
-      if (!this.tempReq.lang) {
-        alert("lang is Req");
-        return;
-      }
-      let temp = JSON.parse(JSON.stringify(this.tempReq));
-      this.models.myResult[temp.lang] = temp.text;
-      this.tempReq.lang = "uz";
-      this.tempReq.text = "";
-    },
+
     remove() {
       this.$api.delete("/home/Delete?id=" + this.selectId).then(
         response => {

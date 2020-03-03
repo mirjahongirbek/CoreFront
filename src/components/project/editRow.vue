@@ -155,6 +155,16 @@ export default {
     }
   },
   methods: {
+    addNewStr() {
+      if (!this.tempReq.lang) {
+        alert("lang is Req");
+        return;
+      }
+      let temp = JSON.parse(JSON.stringify(this.tempReq));
+      this.models.myResult[temp.lang] = temp.text;
+      this.tempReq.lang = "uz";
+      this.tempReq.text = "";
+    },
     addResult() {
       this.models.statusCode = parseInt(this.models.statusCode);
       if (this.models.id) {
@@ -167,7 +177,6 @@ export default {
           if (response.result) {
             this.$emit("addResult", response.result);
           }
-          this.myData.push(response.result);
         },
         err => this.$store.getters.errorResult(err, this)
       );
