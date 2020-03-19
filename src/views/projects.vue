@@ -166,7 +166,7 @@ export default {
   },
   computed: {
     myDatas() {
-      return this.myData.reverse();
+      return this.myData.orderBy(m => m.statusCode);
     },
     options() {
       let projects = this.$store.state.projects;
